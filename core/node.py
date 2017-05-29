@@ -13,6 +13,9 @@ class Node(object):
         self.execute_kernel = None
         self.UIwidget = None
         
+        self.x = 0
+        self.y = 0
+        
     def add_property(self, property):
         property.node = self
         self.properties[property.name] = property
@@ -29,43 +32,41 @@ class Node(object):
     def initialize_ui(self):
         from PySide import QtCore, QtGui
         
-        nodewidget = QtGui.QWidget()
-        nodelayout = QtGui.QVBoxLayout(nodewidget)
+        node_ui_widget = QtGui.QFrame()
+        node_ui_widget.setLineWidth(2)
+        node_ui_widget.setFrameShape(QtGui.QFrame.StyledPanel)
+        node_ui_layout = QtGui.QVBoxLayout(node_ui_widget)
         
         # Label displays the name of the node
         label = QtGui.QLabel(self.name)
-        nodelayout.addWidget(label)
+        node_ui_layout.addWidget(label)
         
         # Render each property separately, add to node UI layout
         for property in self.properties.values():
             propertylayout = property.initialize_ui()
-            nodelayout.addLayout(propertylayout)
+            node_ui_layout.addLayout(propertylayout)
             
         # Add ui components to widget in case its needed later
         # Property layouts can be accessed using the self.properties object itself
-        self.UIwidget = nodewidget
+        self.UIwidget = node_ui_widget
         self.UIwidget.label = label
         
-        return nodewidget
+        return node_ui_widget
+    
+    def draw_node(self, graphwidget):
+        import noderenderwidget
         
+        node_render_widget = noderenderwidget.NodeRenderWidget(graphwidget, self)
+        node_render_widget.setPos(self.x, self.y)
+        graphwidget.widget_scene.addItem(node_render_widget)
+        
+        # Draw property connectors exposed for this node in the graph UI
+        for property in self.properties.values():
+            property.draw_property(graphwidget, self)
+            property.property_render_widget.setPos(self.x, self.y)
+            property.property_render_widget.setParentItem(node_render_widget)
+    
     def refresh(self):
         self.UIwidget.label.setText(self.name)
         for property in self.properties.values():
             property.refresh()
-'''
-Test Suite
-a = Node("Read")
-b = Node("Write")
-print a.id, a.name
-print b.id, b.name
-
-class PrintNode(Node):
-    def __init__(self):
-        super(PrintNode, self).__init__("Print")
-    def execute(self):
-        print "Printing"
-
-p = PrintNode()
-print p.execute()
-print p.id, p.name
-'''

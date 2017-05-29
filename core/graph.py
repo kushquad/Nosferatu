@@ -48,26 +48,3 @@ class Graph:
         schedulelist = self.schedule()
         for nodeid in schedulelist:
             self.nodes[nodeid].execute()
-    
-'''
-Testing suite 1
-import node
-nodes = [
-        node.Node('Print'), node.Node('Read'), node.Node('Write'),
-        node.Node('Slack'), node.Node('Shotgun') 
-        ]
-graph = Graph()
-for node in nodes:
-    graph.add_node(node)
-
-print graph.nodes
-print graph.adjlist
-
-graph.execute()
-
-graph.add_edge(nodes[0], nodes[4])
-graph.add_edge(nodes[4], nodes[2])
-graph.add_edge(nodes[2], nodes[3])
-
-graph.execute()
-'''

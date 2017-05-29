@@ -5,6 +5,8 @@ class Property(object):
     LATCHED = 0
     TRIGGERED = 2
     
+    LABEL_WIDTH = 120
+    
     def __init__(self, name, desc=None, proptype=INPUT|LATCHED,
                  promoted=False, required=False):
         
@@ -32,6 +34,9 @@ class Property(object):
         
         self.node = None
         self.property_layout = None
+        
+        self.property_render_widget = None
+        self.connection_render_widgets = []
         
     def clear(self):
         self.value = None
@@ -63,6 +68,7 @@ class Property(object):
         # Render property name
         property_heading = QtGui.QLabel(self.name)
         property_heading.setToolTip(self.desc)
+        property_heading.setFixedWidth(Property.LABEL_WIDTH)
         property_layout.addWidget(property_heading)
         
         # Render property value
@@ -80,6 +86,20 @@ class Property(object):
         
         return property_layout
     
+    def draw_property(self, graphwidget, noderenderwidget):
+        import propertyrenderwidget
+        
+        property_render_widget = propertyrenderwidget.PropertyRenderWidget(graphwidget, self)
+        graphwidget.widget_scene.addItem(property_render_widget)
+        self.property_render_widget = property_render_widget
+    
+    def draw_property_connection(self, graphwidget, otherproperty):
+        import connectionrenderwidget
+        connection_render_widget = connectionrenderwidget.ConnectionRenderWidget(graphwidget,
+                                   self.property_render_widget, otherproperty.property_render_widget)
+        graphwidget.widget_scene.addItem(connection_render_widget)
+        self.connection_render_widgets.append(connection_render_widget)
+        
     def refresh(self):
         self.property_layout.heading.setText(self.name)
         self.property_layout.value.setText(unicode(self.value))
