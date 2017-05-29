@@ -1,0 +1,7 @@
+*.py[cod]
+*.swp
+*.idea
+*.db
+*.exe
+*.egg-info
+.DS_STORE
