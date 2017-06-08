@@ -6,6 +6,7 @@ class GraphWidget(QtGui.QGraphicsView):
         QtGui.QGraphicsView.__init__(self)
         
         self.widget_scene = QtGui.QGraphicsScene(self)
+        self.widget_scene.setItemIndexMethod(QtGui.QGraphicsScene.NoIndex)
         self.widget_scene.setSceneRect(-320, -240, 640, 480)
         self.setScene(self.widget_scene)
         
@@ -14,6 +15,7 @@ class GraphWidget(QtGui.QGraphicsView):
         self.setTransformationAnchor(QtGui.QGraphicsView.AnchorUnderMouse)
         self.setResizeAnchor(QtGui.QGraphicsView.AnchorViewCenter)
         self.setBackgroundBrush(QtGui.QColor.fromHsv(225,7,45))
+        self.scaleView(0.8)
         
     # Trigger view resize on a mouse wheel scroll
     def wheelEvent(self, event):

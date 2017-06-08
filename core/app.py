@@ -1,13 +1,29 @@
 import sys
 from PySide import QtCore, QtGui
-    
+from nodedesigner import NodeDesigner
+
 def main():
     
     # Setup main application interface
     app = QtGui.QApplication(sys.argv)
     window = QtGui.QWidget()
     window.setWindowTitle('Nosferatu')
+    
+    node_designer = NodeDesigner()
+    
+    mainmenu = QtGui.QMenuBar()
+    createmenu = QtGui.QMenu('File')
+    
+    newgraph = QtGui.QAction('New Graph', window)
+    newnode = QtGui.QAction('New Node', window)
+    createmenu.addAction(newgraph)
+    createmenu.addAction(newnode)
+    newnode.triggered.connect(lambda: node_designer.show())
+    
+    mainmenu.addMenu(createmenu)
+    
     horizontal_window_layout = QtGui.QHBoxLayout(window)
+    horizontal_window_layout.setMenuBar(mainmenu)
     nodeprop_frame = QtGui.QFrame()
     vertical_nodeprop_frame_layout = QtGui.QVBoxLayout(nodeprop_frame)
     
@@ -59,6 +75,7 @@ def main():
     FileReadNode.properties['File Path'].set('C:\Users\Kush\Desktop\Nosferatu\core\graph.py')
     FileReadNode.properties['File Data'].connect(LineSplitterNode.properties['Text'])
     LineSplitterNode.properties['Lines'].connect(ListLengthNode.properties['List'])
+    LineSplitterNode.properties['Lines'].connect(PrintNode.properties['Text'])
     
     graphwidget = graphwidget.GraphWidget()
     horizontal_window_layout.addWidget(graphwidget)
@@ -71,7 +88,7 @@ def main():
         for property in node.properties.values():
             for connected_property in property.connected_properties:
                 property.draw_property_connection(graphwidget, connected_property)
-            
+
     horizontal_window_layout.addWidget(nodeprop_frame)
     
     execute_button = QtGui.QPushButton('Execute')

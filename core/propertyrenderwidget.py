@@ -12,9 +12,9 @@ class PropertyRenderWidget(QtGui.QGraphicsItem):
         self.setCacheMode(self.DeviceCoordinateCache)
         self.setZValue(-1)
         
-        self.base_radius = 20
-        self.base_height = self.base_radius
-        self.base_width = self.base_radius
+        self.base_radius = 10
+        self.base_height = self.base_radius*2
+        self.base_width = self.base_radius*2
     
     def boundingRect(self):
         return QtCore.QRectF(-self.base_width/2, -self.base_height/2, 2*self.base_width, 2*self.base_height)

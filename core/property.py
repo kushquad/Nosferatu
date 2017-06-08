@@ -30,6 +30,7 @@ class Property(object):
         self.value = None
         
         self.connected_properties = set()
+        self.dependent_properties = set()
         self.connected = False
         
         self.node = None
@@ -37,6 +38,7 @@ class Property(object):
         
         self.property_render_widget = None
         self.connection_render_widgets = []
+        self.dependent_connection_render_widgets = []
         
     def clear(self):
         self.value = None
@@ -53,14 +55,19 @@ class Property(object):
     
     def connect(self, property):
         self.connected_properties.add(property)
+        property.dependent_properties.add(self)
         self.node.connect(property.node)
         self.connected = True
         property.connected = True
         
     def disconnect(self, property):
         self.connected_properties.remove(property)
+        property.dependent_properties.remove(self)
         #self.node.disconnect(property.node)
     
+    def setProperty(self, value):
+        self.value = value
+        
     def initialize_ui(self):
         from PySide import QtCore, QtGui
         property_layout = QtGui.QHBoxLayout()
@@ -74,6 +81,7 @@ class Property(object):
         # Render property value
         property_value = QtGui.QTextEdit(unicode(self.value))
         property_value.setToolTip(self.desc)
+        property_value.textChanged.connect(lambda : self.setProperty(property_value.toPlainText()))
         property_layout.addWidget(property_value)
         
         if self.property_role==Property.OUTPUT or self.connected:
@@ -90,15 +98,17 @@ class Property(object):
         import propertyrenderwidget
         
         property_render_widget = propertyrenderwidget.PropertyRenderWidget(graphwidget, self)
-        graphwidget.widget_scene.addItem(property_render_widget)
+        graphwidget.scene().addItem(property_render_widget)
         self.property_render_widget = property_render_widget
     
     def draw_property_connection(self, graphwidget, otherproperty):
         import connectionrenderwidget
+        
         connection_render_widget = connectionrenderwidget.ConnectionRenderWidget(graphwidget,
                                    self.property_render_widget, otherproperty.property_render_widget)
-        graphwidget.widget_scene.addItem(connection_render_widget)
+        graphwidget.scene().addItem(connection_render_widget)
         self.connection_render_widgets.append(connection_render_widget)
+        otherproperty.dependent_connection_render_widgets.append(connection_render_widget)
         
     def refresh(self):
         self.property_layout.heading.setText(self.name)
