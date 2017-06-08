@@ -30,7 +30,6 @@ class NodeDesigner(QtGui.QFrame):
         self.basic_node_layout = QtGui.QVBoxLayout()
         self.node_property_layout = QtGui.QVBoxLayout()
         self.mainlayout.addLayout(self.basic_node_layout)
-        self.mainlayout.addWidget(QtGui.QHorizontalSpacer())
         self.mainlayout.addLayout(self.node_property_layout)
         
         self.node_name_horizontal_layout = QtGui.QHBoxLayout()
